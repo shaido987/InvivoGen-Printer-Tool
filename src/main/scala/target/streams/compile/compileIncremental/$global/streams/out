@@ -1,0 +1,35 @@
+[0m[[0mdebug[0m] [0m[naha] [0m
+[0m[[0mdebug[0m] [0m[naha] Initial source changes: [0m
+[0m[[0mdebug[0m] [0m[naha] 	removed:Set()[0m
+[0m[[0mdebug[0m] [0m[naha] 	added: Set(/home/shaido/dropbox/Dropbox/Programming/Scala/htmlparser/src/main/scala/HTML.scala, /home/shaido/dropbox/Dropbox/Programming/Scala/htmlparser/src/main/scala/main.scala)[0m
+[0m[[0mdebug[0m] [0m[naha] 	modified: Set()[0m
+[0m[[0mdebug[0m] [0m[naha] Invalidated products: Set()[0m
+[0m[[0mdebug[0m] [0m[naha] External API changes: API Changes: Set()[0m
+[0m[[0mdebug[0m] [0m[naha] Modified binary dependencies: Set()[0m
+[0m[[0mdebug[0m] [0m[naha] Initial directly invalidated sources: Set(/home/shaido/dropbox/Dropbox/Programming/Scala/htmlparser/src/main/scala/HTML.scala, /home/shaido/dropbox/Dropbox/Programming/Scala/htmlparser/src/main/scala/main.scala)[0m
+[0m[[0mdebug[0m] [0m[naha] [0m
+[0m[[0mdebug[0m] [0m[naha] Sources indirectly invalidated by:[0m
+[0m[[0mdebug[0m] [0m[naha] 	product: Set()[0m
+[0m[[0mdebug[0m] [0m[naha] 	binary dep: Set()[0m
+[0m[[0mdebug[0m] [0m[naha] 	external source: Set()[0m
+[0m[[0mdebug[0m] [0mAll initially invalidated sources: Set(/home/shaido/dropbox/Dropbox/Programming/Scala/htmlparser/src/main/scala/HTML.scala, /home/shaido/dropbox/Dropbox/Programming/Scala/htmlparser/src/main/scala/main.scala)[0m
+[0m[[0mdebug[0m] [0m[naha] Initial set of included nodes: Set(/home/shaido/dropbox/Dropbox/Programming/Scala/htmlparser/src/main/scala/HTML.scala, /home/shaido/dropbox/Dropbox/Programming/Scala/htmlparser/src/main/scala/main.scala)[0m
+[0m[[0mdebug[0m] [0m[naha] Recompiling all 2 sources: invalidated sources (2) exceeded 50.0% of all sources[0m
+[0m[[0minfo[0m] [0mCompiling 2 Scala sources to /home/shaido/dropbox/Dropbox/Programming/Scala/htmlparser/src/main/scala/target/scala-2.10/classes...[0m
+[0m[[0mdebug[0m] [0mGetting org.scala-sbt:compiler-interface:0.13.12:component from component compiler for Scala 2.10.6[0m
+[0m[[0mdebug[0m] [0mGetting org.scala-sbt:compiler-interface:0.13.12:component from component compiler for Scala 2.10.6[0m
+[0m[[0mdebug[0m] [0mRunning cached compiler 35cc8bb0, interfacing (CompilerInterface) with Scala compiler version 2.10.6[0m
+[0m[[0mdebug[0m] [0mCalling Scala compiler with arguments  (CompilerInterface):[0m
+[0m[[0mdebug[0m] [0m	-bootclasspath[0m
+[0m[[0mdebug[0m] [0m	/usr/lib/jvm/java-8-openjdk/jre/lib/resources.jar:/usr/lib/jvm/java-8-openjdk/jre/lib/rt.jar:/usr/lib/jvm/java-8-openjdk/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-8-openjdk/jre/lib/jsse.jar:/usr/lib/jvm/java-8-openjdk/jre/lib/jce.jar:/usr/lib/jvm/java-8-openjdk/jre/lib/charsets.jar:/usr/lib/jvm/java-8-openjdk/jre/lib/jfr.jar:/usr/lib/jvm/java-8-openjdk/jre/classes:/home/shaido/.sbt/boot/scala-2.10.6/lib/scala-library.jar[0m
+[0m[[0mdebug[0m] [0m	-classpath[0m
+[0m[[0mdebug[0m] [0m	/home/shaido/dropbox/Dropbox/Programming/Scala/htmlparser/src/main/scala/target/scala-2.10/classes[0m
+[0m[[31merror[0m] [0m/home/shaido/dropbox/Dropbox/Programming/Scala/htmlparser/src/main/scala/HTML.scala:5: object ccil is not a member of package org[0m
+[0m[[31merror[0m] [0mimport org.ccil.cowan.tagsoup.jaxp.SAXFactoryImpl[0m
+[0m[[31merror[0m] [0m           ^[0m
+[0m[[31merror[0m] [0m/home/shaido/dropbox/Dropbox/Programming/Scala/htmlparser/src/main/scala/HTML.scala:14: not found: type SAXFactoryImpl[0m
+[0m[[31merror[0m] [0m  lazy val parser  = (new SAXFactoryImpl).newSAXParser()[0m
+[0m[[31merror[0m] [0m                          ^[0m
+[0m[[31merror[0m] [0mtwo errors found[0m
+[0m[[0mdebug[0m] [0mCompilation failed (CompilerInterface)[0m
+[0m[[31merror[0m] [0m(compile:[31mcompileIncremental[0m) Compilation failed[0m
