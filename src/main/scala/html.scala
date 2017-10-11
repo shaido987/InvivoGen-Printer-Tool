@@ -9,8 +9,8 @@ import org.xml.sax.InputSource
 import scala.xml._
 import parsing.NoBindingFactoryAdapter
 
-object HTML {
-  lazy val adapter = new NoBindingFactoryAdapter
+object html {
+  lazy val adapter = new NoBindingFactoryAdapter()
   lazy val parser  = (new SAXFactoryImpl).newSAXParser()
   
   def load(source: InputSource) : Node = adapter.loadXML(source, parser)
