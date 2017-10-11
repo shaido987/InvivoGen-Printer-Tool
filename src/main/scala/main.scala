@@ -1,6 +1,6 @@
 package runtime
 
-import logic.HTML
+import logic.html
 import scala.xml.Node
 
 object invivogenPDFs {
@@ -13,12 +13,12 @@ object invivogenPDFs {
     val size     = scala.io.Source.fromFile(linkFile).getLines().size
     for((line,index) <- lines.zipWithIndex) { 
       if (!line.trim.isEmpty) {
-        val name :: link :: xs = line.split(",").map(_.trim).toList
+        val name :: link :: _ = line.split(",").map(_.trim).toList
         println(s"${index+1}/$size\t- $name\t $link")
-        val node: Node = HTML.loadString(link)
-        val pdf        = HTML.parsePDF(node).head // do not want the MSDS
+        val node: Node = html.loadString(link)
+        val pdf        = html.parsePDF(node).head // do not want the MSDS
         val pdfType    = pdf.split("/").head
-        HTML.downloadPDF(baseadress ++ pdf, name ++ "_TDS.pdf", destination)
+        html.downloadPDF(baseadress ++ pdf, name ++ "_TDS.pdf", destination)
       }
     }
   }
