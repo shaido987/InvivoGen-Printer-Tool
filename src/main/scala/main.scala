@@ -1,6 +1,7 @@
 package runtime
 
 import logic.html
+import logic.printer
 import scala.xml.Node
 import scala.io.Source
 
@@ -11,7 +12,8 @@ object invivogenTDSPrinter {
     val baseAdress  = "http://invivogen.com/"
     val destFolder  = "downloaded TDSs/"
     
-    downloadAllTDS(linkFile, baseAdress, destFolder)
+    //downloadAllTDS(linkFile, baseAdress, destFolder)
+    printer.printDirectory(destFolder)
   }
 
 
