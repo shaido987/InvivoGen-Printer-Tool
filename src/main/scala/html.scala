@@ -29,7 +29,8 @@ object html {
 
   def downloadPDF(source: String, name: String , dest: String = "./") : Unit = {
     val file = new File(dest ++ name)
-    file.getParentFile.mkdirs
+    if (!file.getParentFile.exists)
+      file.getParentFile.mkdirs
     new URL(source) #> file !!
   }
 }

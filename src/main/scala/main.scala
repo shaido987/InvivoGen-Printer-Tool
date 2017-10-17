@@ -16,8 +16,8 @@ object invivogenTDSPrinter {
 
 
   def downloadAllTDS(linkFile: String, baseAdress: String, destFolder: String) {
-    val lines = Source.fromFile(linkFile).getLines()
-
+    val lines = Source.fromFile(linkFile).getLines().toSeq
+    
     for((line, index) <- lines.zipWithIndex) { 
       if (line.trim.nonEmpty) {
         val name :: link :: _ = line.split(",").map(_.trim).toList
