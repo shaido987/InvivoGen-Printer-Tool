@@ -1,3 +1,11 @@
 
-Used to parse the invivogen website to download the sepcified TDS documents
+This small program is used to parse the Invivogen website to download specified TDS documents.
+These are then automatically printed on the default printer.
 
+Two files are required:
+
+- ProductLinks.csv
+- Order.csv
+
+ProductLinks.csv contains the pages where the TDS can be downloaded.
+The TDSs in Order.csv are downloaded and printed, the number of copies of each TDS is also specified here. 
