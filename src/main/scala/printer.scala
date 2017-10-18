@@ -40,8 +40,9 @@ object printer {
 
   def printOrders(dir: String, orders: Map[String, Int]): Unit = {
     for ((name, num) <- orders) {
-//      val fileName = 
-      ???
+      val file = new File(dir + name + ".pdf")
+      printPDF(file)
+      // TODO: prinitng here, num copies
     }
   }
 }

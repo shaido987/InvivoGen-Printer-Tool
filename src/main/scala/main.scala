@@ -18,7 +18,7 @@ object invivogenTDSPrinter {
 
     //downloadAllTDS(linkMap, baseAdress, destFolder)
     downloadOrderTDS(linkMap, orders.map(_._1).toSeq, baseAdress, destFolder)
-    //printer.printOrders(destFolder, orders)
+    printer.printOrders(destFolder, orders)
   }
 
   def getOrders(orderFile: String): Map[String, Int] = {
