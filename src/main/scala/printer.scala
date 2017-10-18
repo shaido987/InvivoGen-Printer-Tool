@@ -37,4 +37,11 @@ object printer {
       printPDF(file)
     }
   }
+
+  def printOrders(dir: String, orders: Map[String, Int]): Unit = {
+    for ((name, num) <- orders) {
+//      val fileName = 
+      ???
+    }
+  }
 }
