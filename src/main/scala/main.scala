@@ -11,7 +11,7 @@ object invivogenTDSPrinter {
     val linkFile    = "ProductLinks.csv"
     val orderFile   = "Order.csv"
     val baseAdress  = "http://invivogen.com/"
-    val destFolder  = "downloaded TDSs/"
+    val destFolder  = "Downloaded TDSs/"
     
     val orders:  Map[String, Int]    = getOrders(orderFile)
     val linkMap: Map[String, String] = getLinkMap(linkFile)
