@@ -1,0 +1,1 @@
+cmd /k java -jar InvivogenTDSPrinter-1.0.jar
