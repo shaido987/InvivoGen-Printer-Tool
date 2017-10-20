@@ -15,7 +15,7 @@ import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.printing.PDFPageable
 
 
-object printer {
+object Printer {
   
   //lazy val printJob = PrinterJob.getPrinterJob()
   //lazy val printer  = if (printJob.printDialog()) Some(printJob.getPrintService()) else None
