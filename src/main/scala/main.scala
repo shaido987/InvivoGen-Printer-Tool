@@ -30,7 +30,7 @@ object InvivogenTDSPrinter {
     println("-----------------------")
 
     downloadOrderTDS(linkMap, tdsOrders.keys.toSeq, baseAdress, destFolder)
-    printer.printOrders(destFolder, tdsOrders)
+    Printer.printOrders(destFolder, tdsOrders)
   }
 
   def getOrders(orderFile: String): Map[String, Int] = {
@@ -54,9 +54,9 @@ object InvivogenTDSPrinter {
   }
 
   def downloadTDS(name: String, link: String, baseAdress: String, destFolder: String): Unit = {
-    val node: Node = html.loadString(link)
-    val tds        = html.findPDF(node).head // do not want the MSDS
-    html.downloadPDF(baseAdress + tds, name + ".pdf", destFolder)
+    val node: Node = HTML.loadString(link)
+    val tds        = HTML.findPDF(node).head // do not want the MSDS
+    HTML.downloadPDF(baseAdress + tds, name + ".pdf", destFolder)
   }
 
   def downloadOrderTDS(linkMap: Map[String, String], names: Seq[String], baseAdress: String, destFolder: String): Unit = {
