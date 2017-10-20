@@ -11,7 +11,7 @@ import org.xml.sax.InputSource
 import scala.xml._
 import parsing.NoBindingFactoryAdapter
 
-object html {
+object HTML {
   lazy val adapter = new NoBindingFactoryAdapter()
   lazy val parser  = (new SAXFactoryImpl).newSAXParser()
   

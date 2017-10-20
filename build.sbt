@@ -1,4 +1,4 @@
-name := "invivogenTDSPrinter"
+name := "InvivogenTDSPrinter"
 version := "1.0"
 
 scalaVersion := "2.11.6"
