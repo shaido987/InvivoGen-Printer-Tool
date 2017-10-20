@@ -5,7 +5,7 @@ import logic.printer
 import scala.xml.Node
 import scala.io.Source
 
-object invivogenTDSPrinter {
+object InvivogenTDSPrinter {
 
   def main(args: Array[String]) = {
     val linkFile    = "ProductLinks.csv"
