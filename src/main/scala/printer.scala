@@ -17,29 +17,21 @@ import org.apache.pdfbox.printing.PDFPageable
 
 object Printer {
   
-  //lazy val printJob = PrinterJob.getPrinterJob()
-  //lazy val printer  = if (printJob.printDialog()) Some(printJob.getPrintService()) else None
-
   private def print(pdf: PDDocument, numCopies: Int): Unit = {
     val job = PrinterJob.getPrinterJob()
-    //job.setPrintService(ps)
     job.setPageable(new PDFPageable(pdf))
 
     val attr = new HashPrintRequestAttributeSet()
     attr.add(new PageRanges(1, 2)) // pages 1 and 2
     attr.add(Sides.TWO_SIDED_LONG_EDGE)
     attr.add(new Copies(numCopies))
-    job.print(attr) //silent print ?
+    job.print(attr)
   }
 
-  def printPDF(file: File, numCopies: Int): Unit = { //, printer: Option[PrintService] = printer): Unit = {
+  def printPDF(file: File, numCopies: Int): Unit = {
     if (file.getName().endsWith("pdf")) {
       val pdf = PDDocument.load(file)
       print(pdf, numCopies)
-//      printer match {
-//        case Some(ps) => print(pdf, ps)
-//        case None     => throw new PrinterException("No printer found")
-//      }
     } else {
       throw new PrinterException(file.getName() + " is not a pdf.")
     }
@@ -53,12 +45,10 @@ object Printer {
   }
 
   def printOrders(dir: String, orders: Map[String, Int]): Unit = {
-    //for ((name, num) <- orders) {
-    val (name, numCopies) = orders.head
-    val file = new File(dir + name + ".pdf")
-    //printPDF(file, numCopies)
-    printPDF(file, 1)
-      // TODO: prinitng here, num copies
-   // }
+    for ((name, num) <- orders) {
+      val (name, numCopies) = orders.head
+      val file = new File(dir + name + ".pdf")
+      printPDF(file, numCopies)
+    }
   }
 }
