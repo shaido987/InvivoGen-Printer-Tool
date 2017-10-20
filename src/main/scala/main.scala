@@ -19,7 +19,7 @@ object InvivogenTDSPrinter {
     // Filter orders after names in linkMap
     // Needed as not all orders are to-be-printed TDSs
     val tdsOrders   = orders filterKeys linkMap.keys.toSet
-    val otherOrders = orders filterKeys tdsOrders.keys.toSet
+    val otherOrders = orders filterKeys !tdsOrders.keys.toSet
 
     // Printing information about the orders
     println("-----------------------")
