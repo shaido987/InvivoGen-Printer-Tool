@@ -15,9 +15,16 @@ import javax.print.attribute.standard.JobName
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.printing.PDFPageable
 
-
+/** Handels all the interactions with the printer */
 object Printer {
   
+  /** Prints a pdf file to the standard printer with the following settings:
+   *  - all pages
+   *  - double-sided (long edge)
+   *
+   *  @param file the pdf file to print
+   *  @param numCopies number of printed copies of the file
+   */
   def printPDF(file: File, numCopies: Int): Unit = {
     if (!file.getName().endsWith("pdf")) 
       throw new PrinterException(file.getName() + " is not a pdf")
@@ -34,6 +41,10 @@ object Printer {
     job.print(attr)
   }
 
+  /** Prints one copy of all pdfs in a directory
+   *
+   *  @param dir the directory with pdfs to print
+   */
   def printDirectory(dir: String): Unit = {
     val d = new File(dir) 
     for (file <- d.listFiles if file.getName().endsWith(".pdf")) {
@@ -41,6 +52,11 @@ object Printer {
     }
   }
 
+  /** Prints all orders, requires all TDSs to be downoaded
+   *
+   *  @param dir directory will downlaoded pdf
+   *  @param orders mapping between product name and number of copies to print
+   */
   def printOrders(dir: String, orders: Map[String, Int]): Unit = {
     for ((name, num) <- orders) {
       val (name, numCopies) = orders.head
