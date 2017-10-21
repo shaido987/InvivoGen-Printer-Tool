@@ -28,12 +28,12 @@ object InvivogenTDSPrinter {
   
   /** Get all orders from file.
    *
-   *  @param orderFile file with orders, should contain a header.
+   *  @param orderFile file with orders, shouldn't contain a header.
    *                   Accepted format is "TDS name", "number of orders".
    *  @return A mapping from TDS name to number of orders.
    */
   def getOrders(orderFile: String): Map[String, Int] = {
-    val orders = Source.fromFile(orderFile).getLines().drop(1)
+    val orders = Source.fromFile(orderFile).getLines()
 
     val res = for (order <- orders if order.trim.nonEmpty) yield {
       val name :: numCopies :: _ = order.split(",").map(_.trim.replace("\"", "")).toList
