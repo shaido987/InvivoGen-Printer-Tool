@@ -10,6 +10,7 @@ import javax.print.attribute.PrintRequestAttributeSet
 import javax.print.attribute.standard.PageRanges
 import javax.print.attribute.standard.Sides
 import javax.print.attribute.standard.Copies
+import javax.print.attribute.standard.JobName
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.printing.PDFPageable
@@ -17,24 +18,20 @@ import org.apache.pdfbox.printing.PDFPageable
 
 object Printer {
   
-  private def print(pdf: PDDocument, numCopies: Int): Unit = {
+  def printPDF(file: File, numCopies: Int): Unit = {
+    if (!file.getName().endsWith("pdf")) 
+      throw new PrinterException(file.getName() + " is not a pdf")
+
+    val pdf = PDDocument.load(file)
     val job = PrinterJob.getPrinterJob()
     job.setPageable(new PDFPageable(pdf))
 
     val attr = new HashPrintRequestAttributeSet()
-    attr.add(new PageRanges(1, 2)) // pages 1 and 2
+    attr.add(new PageRanges(1, pdf.getNumberOfPages())) // pages 1 and 2
     attr.add(Sides.TWO_SIDED_LONG_EDGE)
     attr.add(new Copies(numCopies))
+    attr.add(new JobName(file.getName(), null))
     job.print(attr)
-  }
-
-  def printPDF(file: File, numCopies: Int): Unit = {
-    if (file.getName().endsWith("pdf")) {
-      val pdf = PDDocument.load(file)
-      print(pdf, numCopies)
-    } else {
-      throw new PrinterException(file.getName() + " is not a pdf.")
-    }
   }
 
   def printDirectory(dir: String): Unit = {

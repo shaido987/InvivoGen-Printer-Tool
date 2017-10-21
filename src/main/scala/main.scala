@@ -1,7 +1,6 @@
 package runtime
 
-import logic.html
-import logic.printer
+import logic._
 import scala.xml.Node
 import scala.io.Source
 
@@ -13,21 +12,22 @@ object InvivogenTDSPrinter {
     val baseAdress  = "http://invivogen.com/"
     val destFolder  = "Downloaded TDSs/"
     
+    greeting()
+
     val orders:  Map[String, Int]    = getOrders(orderFile)
     val linkMap: Map[String, String] = getLinkMap(linkFile)
 
     // Filter orders after names in linkMap
     // Needed as not all orders are to-be-printed TDSs
     val tdsOrders   = orders filterKeys linkMap.keys.toSet
-    val otherOrders = orders filterKeys !tdsOrders.keys.toSet
-
+    val otherOrders = orders -- tdsOrders.keys.toSet
+   
     // Printing information about the orders
-    println("-----------------------")
     println(s"Orders in TDS link list, total: ${tdsOrders.size}")
     tdsOrders.keys foreach println
     println(s"\nOrders not in TDS list, total: ${otherOrders.size}")
     otherOrders.keys foreach println
-    println("-----------------------")
+    println("-----------------------------")
 
     downloadOrderTDS(linkMap, tdsOrders.keys.toSeq, baseAdress, destFolder)
     Printer.printOrders(destFolder, tdsOrders)
@@ -75,5 +75,21 @@ object InvivogenTDSPrinter {
       println(s"${index+1}/${linkMap.size}\t- $name\t $link")
       downloadTDS(name, link, baseAdress, destFolder)
     }
+  }
+
+  def greeting(): Unit = {
+    val greeting = 
+      """
+      |-----------------------------
+      ||                           |
+      ||   Invivogen TDS Printer   |
+      ||                           |
+      |-----------------------------
+      || version: 1.0              |
+      || author : shaido987        |
+      || source : @github          |
+      |-----------------------------
+      """
+    println(greeting.stripMargin)
   }
 }
