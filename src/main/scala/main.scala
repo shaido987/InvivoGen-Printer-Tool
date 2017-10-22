@@ -16,7 +16,7 @@ object InvivogenTDSPrinter {
     val destFolder  = "Downloaded TDSs/"
     
     // Print greeting
-    greeting()
+    printGreeting()
 
     val orders:  Map[String, Int]    = getOrders(orderFile)
     val linkMap: Map[String, String] = getLinkMap(linkFile)
@@ -100,6 +100,7 @@ object InvivogenTDSPrinter {
    *  @param destFolder folder to save all pdfs
    */
   def downloadOrderTDS(linkMap: Map[String, String], names: Seq[String], baseAdress: String, destFolder: String): Unit = {
+    println(s"Downloading all TDS documents, total: ${names.length}")
     for ((name, index) <- names.zipWithIndex) {
       println(s"${index+1}/${names.length}\t$name")
 
@@ -111,7 +112,7 @@ object InvivogenTDSPrinter {
   }
 
   /** Startup greeting to the user */
-  def greeting(): Unit = {
+  def printGreeting(): Unit = {
     val greeting = 
       """
       |-----------------------------
