@@ -11,6 +11,7 @@ import javax.print.attribute.standard.PageRanges
 import javax.print.attribute.standard.Sides
 import javax.print.attribute.standard.Copies
 import javax.print.attribute.standard.JobName
+import javax.print.attribute.standard.Chromaticity
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.printing.PDFPageable
@@ -19,8 +20,10 @@ import org.apache.pdfbox.printing.PDFPageable
 object Printer {
   
   /** Prints a pdf file to the standard printer with the following settings:
+   *  - job name is same as product
    *  - all pages
    *  - double-sided (long edge)
+   *  - in color
    *
    *  @param file the pdf file to print
    *  @param numCopies number of printed copies of the file
@@ -38,7 +41,11 @@ object Printer {
     attr.add(Sides.TWO_SIDED_LONG_EDGE)
     attr.add(new Copies(numCopies))
     attr.add(new JobName(file.getName(), null))
+    attr.add(Chromaticity.COLOR)
+
     job.print(attr)
+
+    pdf.close()
   }
 
   /** Prints one copy of all pdfs in a directory
