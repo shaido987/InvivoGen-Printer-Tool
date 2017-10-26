@@ -10,5 +10,4 @@ Two files are required:
 - Order.csv
 
 ProductLinks.csv contains the pages where the TDS can be downloaded.
-The Order.csv should contain the product id and number of items of all orders. 
-Those products in the order with a TDS are downloaded and the correct number of TDS documents are printed for each.
+The Order.csv should contain the product id and number of items of all orders. Those products in the order with a TDS are downloaded and the correct number of TDS documents are printed for each.
