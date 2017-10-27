@@ -20,7 +20,7 @@ object InvivogenTDSPrinter {
 
     val orders:  Map[String, Int]    = getOrders(orderFile)
     val linkMap: Map[String, String] = getLinkMap(linkFile)
-    val tdsOrders = filterOrdersOnNames(orders, linkMap.keys.toSet)
+    val tdsOrders = filterOrdersOnIds(orders, linkMap.keys.toSet)
 
     downloadOrderTDS(linkMap, tdsOrders.keys.toSeq, baseAdress, destFolder)
     Printer.printOrders(destFolder, tdsOrders)
@@ -29,15 +29,15 @@ object InvivogenTDSPrinter {
   /** Get all orders from file.
    *
    *  @param orderFile file with orders, shouldn't contain a header.
-   *                   Accepted format is "TDS name", "number of orders".
-   *  @return A mapping from TDS name to number of orders.
+   *                   Accepted format is "product id", "number of orders".
+   *  @return A mapping from product id to number of orders.
    */
   def getOrders(orderFile: String): Map[String, Int] = {
     val orders = Source.fromFile(orderFile).getLines()
 
     val res = for (order <- orders if order.trim.nonEmpty) yield {
-      val name :: numCopies :: _ = order.split(",").map(_.trim.replace("\"", "")).toList
-      (name -> numCopies.toInt)
+      val id :: numCopies :: _ = order.split(",").map(_.trim.replace("\"", "")).toList
+      (id -> numCopies.toInt)
     }
     res.filter(_._2 > 0).toMap  // Only return the orders with 1 or more to-be-printed pdf
   }
@@ -45,15 +45,15 @@ object InvivogenTDSPrinter {
   /** Get all web adresses for all existing TDSs.
    *
    *  @param linkFile file with web page links, should contain a header.
-   *                  Accepted format is "TDS name", "product webpage"
-   *  @return A mapping from TDS name to web adress.
+   *                  Accepted format is "product id", "product webpage"
+   *  @return A mapping from product id to web adress.
    */
   def getLinkMap(linkFile: String): Map[String, String] = {
-    val nameLinks = Source.fromFile(linkFile).getLines().drop(1)
+    val idLinks = Source.fromFile(linkFile).getLines().drop(1)
 
-    val res = for (nameLink <- nameLinks if nameLink.trim.nonEmpty) yield {
-      val name :: link :: _ = nameLink.split(",").map(_.trim).toList
-      (name -> link)
+    val res = for (idLink <- idLinks if idLink.trim.nonEmpty) yield {
+      val id :: link :: _ = idLink.split(",").map(_.trim).toList
+      (id -> link)
     }
     res.toMap
   }
@@ -62,11 +62,11 @@ object InvivogenTDSPrinter {
    *  Only orders with a corresponding webpage are printed since not all orders have a TDS.
    *  
    *  @param orders all orders, those with or without a corresponding TDS
-   *  @param names all products that have a TDS
+   *  @param ids all products that have a TDS
    *  @return all orders with a corresponding TDS
    */
-  def filterOrdersOnNames(orders: Map[String, Int], names: Set[String]): Map[String, Int] = {
-    val tdsOrders   = orders filterKeys names
+  def filterOrdersOnIds(orders: Map[String, Int], ids: Set[String]): Map[String, Int] = {
+    val tdsOrders   = orders filterKeys ids
     val otherOrders = orders -- tdsOrders.keys.toSet
    
     // Printing information about the orders to user
@@ -81,32 +81,36 @@ object InvivogenTDSPrinter {
 
   /** Downloads a single TDS.
    *
-   *  @param name name of the TDS, will become the pdf name.
+   *  @param id the id of the TDS, will become the pdf name.
    *  @param link link to the product page of the order
    *  @param baseAdress the base adress to invivogen
    *  @param destFolder folder to save the pdf
    */
-  def downloadTDS(name: String, link: String, baseAdress: String, destFolder: String): Unit = {
+  def downloadTDS(id: String, link: String, baseAdress: String, destFolder: String): Unit = {
+    val cleanId = id.replaceAll("-|_","")
     val node: Node = HTML.loadString(link)
-    val tds        = HTML.findPDF(node).head // do not want the MSDS
-    HTML.downloadPDF(baseAdress + tds, name + ".pdf", destFolder)
+
+    // multiple TDS documents can be on the same webpage and do not want the MSDS
+    val tds        = HTML.findPDF(node).filter(f => f.toLowerCase.replaceAll("-|_","").contains(cleanId)).head
+    println(tds.toString)
+    HTML.downloadPDF(baseAdress + tds, id + ".pdf", destFolder)
   }
 
   /** Downloads all TDS for all orders with one.
    *
-   *  @param linkMap mapping from name to product webpage
-   *  @param names the names of all products to be downloaded
+   *  @param linkMap mapping from product id to product webpage
+   *  @param ids the ids of all products to be downloaded
    *  @param baseAdress the base adress to invivogen
    *  @param destFolder folder to save all pdfs
    */
-  def downloadOrderTDS(linkMap: Map[String, String], names: Seq[String], baseAdress: String, destFolder: String): Unit = {
-    println(s"Downloading all TDS documents, total: ${names.length}")
-    for ((name, index) <- names.zipWithIndex) {
-      println(s"${index+1}/${names.length}\t$name")
+  def downloadOrderTDS(linkMap: Map[String, String], ids: Seq[String], baseAdress: String, destFolder: String): Unit = {
+    println(s"Downloading all TDS documents, total: ${ids.length}")
+    for ((id, index) <- ids.zipWithIndex) {
+      println(s"${index+1}/${ids.length}\t$id")
 
-      linkMap.get(name) match {
-        case Some(link) => downloadTDS(name, link, baseAdress, destFolder)
-        case None       => throw new NoSuchElementException("The name " + name + " not in link csv file.")
+      linkMap.get(id) match {
+        case Some(link) => downloadTDS(id, link, baseAdress, destFolder)
+        case None       => throw new NoSuchElementException("The id " + id + " not in link csv file.")
       }
     }
   }

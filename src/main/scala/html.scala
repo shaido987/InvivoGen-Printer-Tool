@@ -41,11 +41,11 @@ object HTML {
   /** Downloads a pdf document.
    *
    *  @param source the source adress to download
-   *  @param name name of the saved file
+   *  @param id id of the saved file
    *  @param dest destionation directory
    */
-  def downloadPDF(source: String, name: String , dest: String = "./") : Unit = {
-    val file = new File(dest ++ name)
+  def downloadPDF(source: String, id: String , dest: String = "./") : Unit = {
+    val file = new File(dest ++ id)
     if (!file.getParentFile.exists)
       file.getParentFile.mkdirs
     new URL(source) #> file !!
