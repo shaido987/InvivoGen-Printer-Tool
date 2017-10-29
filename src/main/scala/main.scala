@@ -124,9 +124,9 @@ object InvivogenTDSPrinter {
       ||   Invivogen TDS Printer   |
       ||                           |
       |-----------------------------
-      || version: 1.0              |
+      || version: 1.0.2            |
       || author : shaido987        |
-      || source : @github          |
+      || source : @github.com      |
       |-----------------------------
       """
 
