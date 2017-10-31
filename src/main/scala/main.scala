@@ -91,8 +91,7 @@ object InvivogenTDSPrinter {
     val node: Node = HTML.loadString(link)
 
     // multiple TDS documents can be on the same webpage and do not want the MSDS
-    val tds        = HTML.findPDF(node).filter(f => f.toLowerCase.replaceAll("-|_","").contains(cleanId)).head
-    println(tds.toString)
+    val tds = HTML.findPDF(node).filter(f => f.toLowerCase.replaceAll("-|_","").contains(cleanId)).head
     HTML.downloadPDF(baseAdress + tds, id + ".pdf", destFolder)
   }
 
