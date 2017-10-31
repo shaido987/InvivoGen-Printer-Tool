@@ -87,11 +87,9 @@ object InvivogenTDSPrinter {
    *  @param destFolder folder to save the pdf
    */
   def downloadTDS(id: String, link: String, baseAdress: String, destFolder: String): Unit = {
-    val cleanId = id.replaceAll("-|_","")
     val node: Node = HTML.loadString(link)
 
-    // multiple TDS documents can be on the same webpage and do not want the MSDS
-    val tds = HTML.findPDF(node).filter(f => f.toLowerCase.replaceAll("-|_","").contains(cleanId)).head
+    val tds = HTML.findPDF(node, id)
     HTML.downloadPDF(baseAdress + tds, id + ".pdf", destFolder)
   }
 
@@ -123,7 +121,7 @@ object InvivogenTDSPrinter {
       ||   Invivogen TDS Printer   |
       ||                           |
       |-----------------------------
-      || version: 1.0.2            |
+      || version: 1.0.3            |
       || author : shaido987        |
       || source : @github.com      |
       |-----------------------------
