@@ -33,9 +33,20 @@ object HTML {
    *  @param node the XML node to search
    *  @return all pdf documents meeting the requirements (TDS and MSDS).
    */
-  def findPDF(node: Node) : Seq[String] = {
+  def findPDF(node: Node, id: String) : String = {
     val pdfs = (node \\ "ul").filter(_.attribute("class").getOrElse("").toString == ("liste-pdf")).head
-    (pdfs \\ "a").map(_.attribute("href").get.toString)
+    val textLinks: Seq[(String, String)] = (pdfs \\ "a").map(n => (n.text.toString, n.attribute("href").get.toString))
+   
+    def textContains(text: String, id: String): Boolean = {
+      text.toLowerCase.replaceAll("-|_|\\s","").contains(id.toLowerCase.replaceAll("-|_|\\s",""))
+    }
+
+    // Check so the id is in the text and "tds" is in the pdf name
+    val tds = textLinks.filter{case (text, link) => textContains(text, id) && textContains(link, "tds")}
+      .map(_._2)
+
+    assert(tds.length == 1, "Error finding the TDS pdf online")
+    tds.head
   }
 
   /** Downloads a pdf document.
