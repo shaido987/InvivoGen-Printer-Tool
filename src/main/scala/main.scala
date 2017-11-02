@@ -22,9 +22,8 @@ object InvivogenTDSPrinter {
     val linkMap: Map[String, String] = getLinkMap(linkFile)
     val tdsOrders = filterOrdersOnIds(orders, linkMap.keys.toSet)
 
-    downloadAllTDS(linkMap, baseAdress, destFolder)
-    //downloadOrderTDS(linkMap, tdsOrders.keys.toSeq, baseAdress, destFolder)
-    //Printer.printOrders(destFolder, tdsOrders)
+    downloadOrderTDS(linkMap, tdsOrders.keys.toSeq, baseAdress, destFolder)
+    Printer.printOrders(destFolder, tdsOrders)
   }
   
   /** Get all orders from file.
