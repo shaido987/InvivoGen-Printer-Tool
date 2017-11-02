@@ -41,12 +41,10 @@ object HTML {
       text.toLowerCase.replaceAll("-|_|\\s","").contains(id.toLowerCase.replaceAll("-|_|\\s",""))
     }
 
-    // Check so the id is in the text and "tds" is in the pdf name
-    val tds = textLinks.filter{case (text, link) => textContains(text, id) && textContains(link, "tds")}
+    // Check so the id is in the text
+    textLinks.filter{case (text, link) => textContains(text, id)}
       .map(_._2)
-
-    assert(tds.length == 1, "Error finding the TDS pdf online")
-    tds.head
+      .head // Only take the TDS, ignore the MDMS
   }
 
   /** Downloads a pdf document.

@@ -22,8 +22,9 @@ object InvivogenTDSPrinter {
     val linkMap: Map[String, String] = getLinkMap(linkFile)
     val tdsOrders = filterOrdersOnIds(orders, linkMap.keys.toSet)
 
-    downloadOrderTDS(linkMap, tdsOrders.keys.toSeq, baseAdress, destFolder)
-    Printer.printOrders(destFolder, tdsOrders)
+    downloadAllTDS(linkMap, baseAdress, destFolder)
+    //downloadOrderTDS(linkMap, tdsOrders.keys.toSeq, baseAdress, destFolder)
+    //Printer.printOrders(destFolder, tdsOrders)
   }
   
   /** Get all orders from file.
@@ -101,7 +102,7 @@ object InvivogenTDSPrinter {
    *  @param destFolder folder to save all pdfs
    */
   def downloadOrderTDS(linkMap: Map[String, String], ids: Seq[String], baseAdress: String, destFolder: String): Unit = {
-    println(s"Downloading all TDS documents, total: ${ids.length}")
+    println(s"Downloading TDS documents, total: ${ids.length}")
     for ((id, index) <- ids.zipWithIndex) {
       println(s"${index+1}/${ids.length}\t$id")
 
@@ -109,6 +110,20 @@ object InvivogenTDSPrinter {
         case Some(link) => downloadTDS(id, link, baseAdress, destFolder)
         case None       => throw new NoSuchElementException("The id " + id + " not in link csv file.")
       }
+    }
+  }
+
+  /** Downloads all TDS documents
+   *
+   * @param linkMap mapping from product id to product webpage
+   * @param baseAdress the base adress to invivogen
+   * @param destFolder folder to save all pdfs
+   */
+  def downloadAllTDS(linkMap: Map[String, String], baseAdress: String, destFolder: String): Unit = {
+    println(s"Downloading all TDS documents, total: ${linkMap.size}")
+    for (((id, link), index) <- linkMap.toSeq.zipWithIndex) {
+      println(s"${index+1}/${linkMap.size}\t$id")
+      downloadTDS(id, link, baseAdress, destFolder)
     }
   }
 
@@ -121,7 +136,7 @@ object InvivogenTDSPrinter {
       ||   Invivogen TDS Printer   |
       ||                           |
       |-----------------------------
-      || version: 1.0.3            |
+      || version: 1.0.4            |
       || author : shaido987        |
       || source : @github.com      |
       |-----------------------------
