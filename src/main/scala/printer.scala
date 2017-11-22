@@ -65,7 +65,10 @@ object Printer {
    *  @param orders mapping between product name and number of copies to print
    */
   def printOrders(dir: String, orders: Map[String, Int]): Unit = {
-    for ((id, numCopies) <- orders) {
+    println("Starting to print")
+    for (((id, numCopies), index) <- orders.zipWithIndex) {
+      println(s"${index+1}/${orders.length}\t$id")
+      
       val file = new File(dir + id + ".pdf")
       printPDF(file, numCopies)
     }
