@@ -87,10 +87,10 @@ object InvivogenTDSPrinter {
    *  @param destFolder folder to save the pdf
    */
   def downloadTDS(id: String, link: String, baseAdress: String, destFolder: String): Unit = {
-    val node: Node = HTML.loadString(link)
+    val node: Node = Html.loadString(link)
 
-    val tds = HTML.findPDF(node, id)
-    HTML.downloadPDF(baseAdress + tds, id + ".pdf", destFolder)
+    val tds = Html.findPDF(node, id)
+    Html.downloadPDF(baseAdress + tds, id + ".pdf", destFolder)
   }
 
   /** Downloads all TDS for all orders with one.

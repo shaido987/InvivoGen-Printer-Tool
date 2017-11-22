@@ -43,7 +43,11 @@ object Printer {
     attr.add(new JobName(file.getName(), null))
     attr.add(Chromaticity.COLOR)
 
-    job.print(attr)
+    //TODO: TESTING
+    pdf.save("test.pdf")
+    job.printDialog()
+
+    //job.print(attr)
 
     pdf.close()
   }

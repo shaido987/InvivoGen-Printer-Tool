@@ -12,7 +12,7 @@ import scala.xml._
 import parsing.NoBindingFactoryAdapter
 
 /** Object taking care of all interactions with internet */
-object HTML {
+object Html {
   lazy val adapter = new NoBindingFactoryAdapter()
   lazy val parser  = (new SAXFactoryImpl).newSAXParser()
   
