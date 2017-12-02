@@ -1,18 +1,11 @@
-import java.io.File
-import java.awt.print.PrinterJob
+import java.io.{File, FileInputStream, FileNotFoundException}
 import java.awt.print.PrinterException
-
-import javax.print.PrintService
+import javax.print.{DocFlavor, PrintService, PrintServiceLookup, SimpleDoc}
 import javax.print.attribute.HashPrintRequestAttributeSet
-import javax.print.attribute.PrintRequestAttributeSet
-import javax.print.attribute.standard.PageRanges
 import javax.print.attribute.standard.Sides
 import javax.print.attribute.standard.Copies
 import javax.print.attribute.standard.JobName
 import javax.print.attribute.standard.Chromaticity
-
-import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.printing.PDFPageable
 
 /** Handels all the interactions with the printer */
 object Printer {
@@ -27,28 +20,27 @@ object Printer {
    *  @param numCopies number of printed copies of the file
    */
   def printPDF(file: File, numCopies: Int): Unit = {
-    if (!file.getName().endsWith("pdf")) 
-      throw new PrinterException(file.getName() + " is not a pdf")
+    try {
+      val flavor = DocFlavor.INPUT_STREAM.PDF
+      val fis = new FileInputStream(file)
+      val doc = new SimpleDoc(fis, flavor, null)
 
-    val pdf = PDDocument.load(file)
-    val job = PrinterJob.getPrinterJob()
-    job.setPageable(new PDFPageable(pdf))
+      val printService = PrintServiceLookup.lookupDefaultPrintService()
+      val job = printService.createPrintJob()
 
-    val attr = new HashPrintRequestAttributeSet()
-    attr.add(new PageRanges(1, pdf.getNumberOfPages())) // pages 1 and 2
-    attr.add(Sides.TWO_SIDED_LONG_EDGE)
-    attr.add(new Copies(numCopies))
-    attr.add(new JobName(file.getName(), null))
-    attr.add(Chromaticity.COLOR)
+      val attrs = new HashPrintRequestAttributeSet()
+      attrs.add(Sides.TWO_SIDED_LONG_EDGE)
+      attrs.add(new Copies(numCopies))
+      attrs.add(new JobName(file.getName(), null))
+      attrs.add(Chromaticity.COLOR)
 
-    //TODO: TESTING
-    //TODO remove idea files from git...
-    //pdf.save("test.pdf")
-    //job.printDialog()
-
-    job.print(attr)
-
-    pdf.close()
+      job.print(doc, attrs)
+      fis.close()
+    } catch {
+      case e: PrinterException => println("Printer exception");  e.printStackTrace()
+      case e: FileNotFoundException => println("File not found"); e.printStackTrace()
+      case e: NullPointerException => println("No default printer"); e.printStackTrace()
+    }
   }
 
   /** Prints one copy of all pdfs in a directory
