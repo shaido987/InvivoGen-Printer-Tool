@@ -1,9 +1,5 @@
-package runtime
-
-import logic._
 import scala.xml.Node
 import scala.io.Source
-
 
 /** Main object for running the TDS download and printing */
 object InvivogenTDSPrinter {
@@ -37,7 +33,7 @@ object InvivogenTDSPrinter {
 
     val res = for (order <- orders if order.trim.nonEmpty) yield {
       val id :: numCopies :: _ = order.split(",").map(_.trim.replace("\"", "")).toList
-      (id -> numCopies.toInt)
+      id -> numCopies.toInt
     }
     res.filter(_._2 > 0).toMap  // Only return the orders with 1 or more to-be-printed pdf
   }
@@ -53,7 +49,7 @@ object InvivogenTDSPrinter {
 
     val res = for (idLink <- idLinks if idLink.trim.nonEmpty) yield {
       val id :: link :: _ = idLink.split(",").map(_.trim).toList
-      (id -> link)
+      id -> link
     }
     res.toMap
   }
@@ -135,7 +131,7 @@ object InvivogenTDSPrinter {
       ||   Invivogen TDS Printer   |
       ||                           |
       |-----------------------------
-      || version: 1.0.4            |
+      || version: 1.0.5            |
       || author : shaido987        |
       || source : @github.com      |
       |-----------------------------

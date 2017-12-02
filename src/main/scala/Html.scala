@@ -1,5 +1,3 @@
-package logic
-
 import java.net.URL
 import java.io.File
 import sys.process._

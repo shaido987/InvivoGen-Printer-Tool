@@ -1,5 +1,3 @@
-package logic
-
 import java.io.File
 import java.awt.print.PrinterJob
 import java.awt.print.PrinterException
@@ -44,6 +42,7 @@ object Printer {
     attr.add(Chromaticity.COLOR)
 
     //TODO: TESTING
+    //TODO remove idea files from git...
     pdf.save("test.pdf")
     job.printDialog()
 
@@ -71,7 +70,7 @@ object Printer {
   def printOrders(dir: String, orders: Map[String, Int]): Unit = {
     println("Starting to print")
     for (((id, numCopies), index) <- orders.zipWithIndex) {
-      println(s"${index+1}/${orders.length}\t$id")
+      println(s"${index+1}/${orders.size}\t$id")
       
       val file = new File(dir + id + ".pdf")
       printPDF(file, numCopies)
