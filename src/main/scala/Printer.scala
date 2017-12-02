@@ -31,7 +31,7 @@ object Printer {
       val attrs = new HashPrintRequestAttributeSet()
       attrs.add(Sides.TWO_SIDED_LONG_EDGE)
       attrs.add(new Copies(numCopies))
-      attrs.add(new JobName(file.getName(), null))
+      attrs.add(new JobName(file.getName, null))
       attrs.add(Chromaticity.COLOR)
 
       job.print(doc, attrs)
@@ -49,7 +49,7 @@ object Printer {
    */
   def printDirectory(dir: String): Unit = {
     val d = new File(dir) 
-    for (file <- d.listFiles if file.getName().endsWith(".pdf")) {
+    for (file <- d.listFiles if file.getName.endsWith(".pdf")) {
       printPDF(file, 1)
     }
   }
@@ -60,6 +60,7 @@ object Printer {
    *  @param orders mapping between product name and number of copies to print
    */
   def printOrders(dir: String, orders: Map[String, Int]): Unit = {
+    println("-----------------------------")
     println("Starting to print")
     for (((id, numCopies), index) <- orders.zipWithIndex) {
       println(s"${index+1}/${orders.size}\t$id")
