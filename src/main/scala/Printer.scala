@@ -21,7 +21,7 @@ object Printer {
    */
   def printPDF(file: File, numCopies: Int): Unit = {
     try {
-      val flavor = DocFlavor.INPUT_STREAM.PDF
+      val flavor = DocFlavor.INPUT_STREAM.AUTOSENSE
       val fis = new FileInputStream(file)
       val doc = new SimpleDoc(fis, flavor, null)
 
