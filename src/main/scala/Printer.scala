@@ -43,10 +43,10 @@ object Printer {
 
     //TODO: TESTING
     //TODO remove idea files from git...
-    pdf.save("test.pdf")
-    job.printDialog()
+    //pdf.save("test.pdf")
+    //job.printDialog()
 
-    //job.print(attr)
+    job.print(attr)
 
     pdf.close()
   }
