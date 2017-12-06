@@ -1,11 +1,8 @@
 import java.io.{File, FileInputStream, FileNotFoundException}
 import java.awt.print.PrinterException
 import javax.print.{DocFlavor, PrintService, PrintServiceLookup, SimpleDoc}
-import javax.print.attribute.HashPrintRequestAttributeSet
-import javax.print.attribute.standard.Sides
-import javax.print.attribute.standard.Copies
-import javax.print.attribute.standard.JobName
-import javax.print.attribute.standard.Chromaticity
+import javax.print.attribute.{HashDocAttributeSet, HashPrintRequestAttributeSet}
+import javax.print.attribute.standard._
 
 /** Handels all the interactions with the printer */
 object Printer {
@@ -22,19 +19,20 @@ object Printer {
   def printPDF(file: File, numCopies: Int): Unit = {
     try {
       val flavor = DocFlavor.INPUT_STREAM.AUTOSENSE
+      val docAttrs = new HashDocAttributeSet()
+      docAttrs.add(new DocumentName(file.getName, null))
+      docAttrs.add(Chromaticity.COLOR)
+      docAttrs.add(Sides.TWO_SIDED_LONG_EDGE)
       val fis = new FileInputStream(file)
-      val doc = new SimpleDoc(fis, flavor, null)
+      val doc = new SimpleDoc(fis, flavor, docAttrs)
 
       val printService = PrintServiceLookup.lookupDefaultPrintService()
       val job = printService.createPrintJob()
+      val jobAttrs = new HashPrintRequestAttributeSet()
+      jobAttrs.add(new Copies(numCopies))
+      jobAttrs.add(new JobName(file.getName, null))
 
-      val attrs = new HashPrintRequestAttributeSet()
-      attrs.add(Sides.TWO_SIDED_LONG_EDGE)
-      attrs.add(new Copies(numCopies))
-      attrs.add(new JobName(file.getName, null))
-      attrs.add(Chromaticity.COLOR)
-
-      job.print(doc, attrs)
+      job.print(doc, jobAttrs)
       fis.close()
     } catch {
       case e: PrinterException => println("Printer exception");  e.printStackTrace()
