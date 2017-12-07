@@ -29,8 +29,10 @@ object Printer {
       val printService = PrintServiceLookup.lookupDefaultPrintService()
       val job = printService.createPrintJob()
       val jobAttrs = new HashPrintRequestAttributeSet()
-      jobAttrs.add(new Copies(numCopies))
       jobAttrs.add(new JobName(file.getName, null))
+      jobAttrs.add(new Copies(numCopies))
+      jobAttrs.add(Sides.TWO_SIDED_LONG_EDGE)
+      jobAttrs.add(Chromaticity.COLOR)
 
       job.print(doc, jobAttrs)
       fis.close()
