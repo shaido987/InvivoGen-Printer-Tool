@@ -22,6 +22,7 @@ object Printer {
       val docAttrs = new HashDocAttributeSet()
       docAttrs.add(new DocumentName(file.getName, null))
       docAttrs.add(Chromaticity.COLOR)
+      docAttrs.add(Sides.DUPLEX)
       docAttrs.add(Sides.TWO_SIDED_LONG_EDGE)
       val fis = new FileInputStream(file)
       val doc = new SimpleDoc(fis, flavor, docAttrs)
@@ -31,8 +32,26 @@ object Printer {
       val jobAttrs = new HashPrintRequestAttributeSet()
       jobAttrs.add(new JobName(file.getName, null))
       jobAttrs.add(new Copies(numCopies))
+      jobAttrs.add(Sides.DUPLEX)
       jobAttrs.add(Sides.TWO_SIDED_LONG_EDGE)
       jobAttrs.add(Chromaticity.COLOR)
+
+
+      // TODO: TESTING
+      val supportedAttrs = printService.getSupportedAttributeCategories
+      val unSupportedAttrs = printService.getUnsupportedAttributes(flavor, jobAttrs)
+      val supporedFlavors = printService.getSupportedDocFlavors
+      val attrs = printService.getAttributes
+
+      println("Supported flavors:")
+      supporedFlavors foreach println
+      println("Supported Attrs:")
+      supportedAttrs foreach (x => println(x.toString))
+      println("Un-supported Attrs:")
+      unSupportedAttrs.toArray foreach (x => println(s"Category: ${x.getCategory}, name: ${x.getName}"))
+      println("Printer Attrs:")
+      attrs.toArray foreach (x => println(s"Category: ${x.getCategory}, name: ${x.getName}"))
+
 
       job.print(doc, jobAttrs)
       fis.close()
