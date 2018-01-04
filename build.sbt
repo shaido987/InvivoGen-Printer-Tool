@@ -3,7 +3,7 @@ version := "1.0.5"
 
 scalaVersion := "2.11.6"
 
-mainClass in (Compile, run) := Some("runtime.InvivogenTDSPrinter")
+mainClass in (Compile, run) := Some("InvivogenTDSPrinter")
 
 libraryDependencies += "org.scala-lang.modules" % "scala-xml_2.11" % "1.0.5"
 libraryDependencies += "org.ccil.cowan.tagsoup" % "tagsoup" % "1.2.1"

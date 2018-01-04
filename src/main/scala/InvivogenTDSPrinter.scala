@@ -29,13 +29,13 @@ object InvivogenTDSPrinter {
    *  @return A mapping from product id to number of orders.
    */
   def getOrders(orderFile: String): Map[String, Int] = {
-    val orders = Source.fromFile(orderFile).getLines()
+    val orders = Source.fromFile(orderFile).getLines().toList
 
     val res = for (order <- orders if order.trim.nonEmpty) yield {
       val id :: numCopies :: _ = order.split(",").map(_.trim.replace("\"", "")).toList
       id -> numCopies.toInt
     }
-    res.filter(_._2 > 0).toMap  // Only return the orders with 1 or more to-be-printed pdf
+    res.filter(_._2 > 0).groupBy(_._1).mapValues(_.map(_._2).sum)  // Only return the orders with 1 or more to-be-printed pdf
   }
   
   /** Get all web adresses for all existing TDSs.
