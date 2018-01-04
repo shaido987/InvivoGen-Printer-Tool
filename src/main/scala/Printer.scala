@@ -1,8 +1,18 @@
-import java.io.{File, FileInputStream, FileNotFoundException}
+import java.io.File
+import java.awt.print.PrinterJob
 import java.awt.print.PrinterException
-import javax.print.{DocFlavor, PrintService, PrintServiceLookup, SimpleDoc}
-import javax.print.attribute.{HashDocAttributeSet, HashPrintRequestAttributeSet}
-import javax.print.attribute.standard._
+
+import javax.print.PrintService
+import javax.print.attribute.HashPrintRequestAttributeSet
+import javax.print.attribute.PrintRequestAttributeSet
+import javax.print.attribute.standard.PageRanges
+import javax.print.attribute.standard.Sides
+import javax.print.attribute.standard.Copies
+import javax.print.attribute.standard.JobName
+import javax.print.attribute.standard.Chromaticity
+
+import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.printing.PDFPageable
 
 /** Handels all the interactions with the printer */
 object Printer {
@@ -17,49 +27,23 @@ object Printer {
    *  @param numCopies number of printed copies of the file
    */
   def printPDF(file: File, numCopies: Int): Unit = {
-    try {
-      val flavor = DocFlavor.INPUT_STREAM.AUTOSENSE
-      val docAttrs = new HashDocAttributeSet()
-      docAttrs.add(new DocumentName(file.getName, null))
-      docAttrs.add(Chromaticity.COLOR)
-      docAttrs.add(Sides.DUPLEX)
-      docAttrs.add(Sides.TWO_SIDED_LONG_EDGE)
-      val fis = new FileInputStream(file)
-      val doc = new SimpleDoc(fis, flavor, docAttrs)
+    if (!file.getName().endsWith("pdf")) 
+      throw new PrinterException(file.getName() + " is not a pdf")
 
-      val printService = PrintServiceLookup.lookupDefaultPrintService()
-      val job = printService.createPrintJob()
-      val jobAttrs = new HashPrintRequestAttributeSet()
-      jobAttrs.add(new JobName(file.getName, null))
-      jobAttrs.add(new Copies(numCopies))
-      jobAttrs.add(Sides.DUPLEX)
-      jobAttrs.add(Sides.TWO_SIDED_LONG_EDGE)
-      jobAttrs.add(Chromaticity.COLOR)
+    val pdf = PDDocument.load(file)
+    val job = PrinterJob.getPrinterJob()
+    job.setPageable(new PDFPageable(pdf))
 
+    val attr = new HashPrintRequestAttributeSet()
+    attr.add(new PageRanges(1, pdf.getNumberOfPages()))
+    attr.add(Sides.TWO_SIDED_LONG_EDGE)
+    attr.add(new Copies(numCopies))
+    attr.add(new JobName(file.getName(), null))
+    attr.add(Chromaticity.COLOR)
 
-      // TODO: TESTING
-      val supportedAttrs = printService.getSupportedAttributeCategories
-      val unSupportedAttrs = printService.getUnsupportedAttributes(flavor, jobAttrs)
-      val supporedFlavors = printService.getSupportedDocFlavors
-      val attrs = printService.getAttributes
+    job.print(attr)
 
-      println("Supported flavors:")
-      supporedFlavors foreach println
-      println("Supported Attrs:")
-      supportedAttrs foreach (x => println(x.toString))
-      println("Un-supported Attrs:")
-      unSupportedAttrs.toArray foreach (x => println(s"Category: ${x.getCategory}, name: ${x.getName}"))
-      println("Printer Attrs:")
-      attrs.toArray foreach (x => println(s"Category: ${x.getCategory}, name: ${x.getName}"))
-
-
-      job.print(doc, jobAttrs)
-      fis.close()
-    } catch {
-      case e: PrinterException => println("Printer exception");  e.printStackTrace()
-      case e: FileNotFoundException => println("File not found"); e.printStackTrace()
-      case e: NullPointerException => println("No default printer"); e.printStackTrace()
-    }
+    pdf.close()
   }
 
   /** Prints one copy of all pdfs in a directory
