@@ -5,6 +5,10 @@ import javax.print.PrintService
 import javax.print.attribute.{HashPrintRequestAttributeSet, PrintRequestAttributeSet}
 import javax.print.attribute.standard.{PageRanges, Sides, Copies, JobName, Chromaticity}
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.awt.print.{Printable, PageFormat}
+
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.printing.PDFPageable
 
@@ -52,7 +56,25 @@ object Printer {
   def printPDFasImage(file: File, numCopies: Int): Unit = {
     if (!file.getName().endsWith("pdf")) 
       throw new PrinterException(file.getName() + " is not a pdf")
+    val pdf = PDDocument.load(file)
+    val pdfRenderer = new PDFRenderer(pdf)
     
+    val bims = for (page <- (0 to pdf.getNumberOfPages())) {
+      pdfRenderer.renderImageWithDPI(page, 300, ImageType.RGB)
+      //Save page:
+      //ImageIOUtil.writeImage(bim, pdfFilename + "-" + (page+1) + ".png", 300)
+    }
+    
+    val doc = new PDDocument()
+    for (bim <- bims) {
+      val page = new PDPage()
+      doc.addPage(page)
+      val pdImageXObject = LosslessFactory.createFromImage(doc, bim, 300)
+      val contentStream = new PDPageContentStream(doc, page, true, true)
+      contentStream.drawImage(pdImageXObject, 0, 0)
+      contentStream.close()
+    }
+    printPDF(doc, numCopies)
   }
   
   /** Prints one copy of all pdfs in a directory
