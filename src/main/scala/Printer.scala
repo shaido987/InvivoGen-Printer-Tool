@@ -5,10 +5,6 @@ import javax.print.PrintService
 import javax.print.attribute.{HashPrintRequestAttributeSet, PrintRequestAttributeSet}
 import javax.print.attribute.standard.{PageRanges, Sides, Copies, JobName, Chromaticity}
 
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.awt.print.{Printable, PageFormat}
-
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.printing.PDFPageable
 
