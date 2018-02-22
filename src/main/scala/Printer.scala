@@ -66,7 +66,9 @@ object Printer {
       val page = new PDPage()
       doc.addPage(page)
       val pdImageXObject = LosslessFactory.createFromImage(doc, bim, 300)
-      val contentStream = new PDPageContentStream(doc, page, true, true)
+      
+      // Second bool is compression. Remove if bad quality
+      val contentStream = new PDPageContentStream(doc, page, false, true) 
       contentStream.drawImage(pdImageXObject, 0, 0)
       contentStream.close()
     }
