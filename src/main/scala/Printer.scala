@@ -1,12 +1,12 @@
 import java.io.File
-import java.awt.print.{PrinterJob, PrinterException}
+import java.awt.print.{PrinterException, PrinterJob}
+import javax.print.attribute.HashPrintRequestAttributeSet
+import javax.print.attribute.standard.{Chromaticity, Copies, JobName, PageRanges, Sides}
 
-import javax.print.PrintService
-import javax.print.attribute.{HashPrintRequestAttributeSet, PrintRequestAttributeSet}
-import javax.print.attribute.standard.{PageRanges, Sides, Copies, JobName, Chromaticity}
-
-import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory
+import org.apache.pdfbox.pdmodel.{PDDocument, PDPage, PDPageContentStream}
 import org.apache.pdfbox.printing.PDFPageable
+import org.apache.pdfbox.rendering.{ImageType, PDFRenderer}
 
 /** Handels all the interactions with the printer */
 object Printer {
@@ -17,22 +17,36 @@ object Printer {
    *  - double-sided (long edge)
    *  - in color
    *
-   *  @param file the pdf file to print
+   *  @param file the pdf file to print in File format
    *  @param numCopies number of printed copies of the file
    */
   def printPDF(file: File, numCopies: Int): Unit = {
-    if (!file.getName().endsWith("pdf")) 
-      throw new PrinterException(file.getName() + " is not a pdf")
+    if (!file.getName.endsWith("pdf"))
+      throw new PrinterException(file.getName + " is not a pdf")
 
     val pdf = PDDocument.load(file)
-    val job = PrinterJob.getPrinterJob()
+    printPDF(pdf, file.getName, numCopies)
+  }
+
+  /** Prints a pdf file to the standard printer with the following settings:
+    *  - job name is same as product
+    *  - all pages
+    *  - double-sided (long edge)
+    *  - in color
+    *
+    *  @param pdf the pdf file to print in PDDocument format
+    *  @param name the name of the printjob
+    *  @param numCopies number of printed copies of the file
+    */
+  def printPDF(pdf: PDDocument, name: String, numCopies: Int): Unit = {
+    val job = PrinterJob.getPrinterJob
     job.setPageable(new PDFPageable(pdf))
 
     val attr = new HashPrintRequestAttributeSet()
-    attr.add(new PageRanges(1, pdf.getNumberOfPages()))
+    attr.add(new PageRanges(1, pdf.getNumberOfPages))
     attr.add(Sides.TWO_SIDED_LONG_EDGE)
     attr.add(new Copies(numCopies))
-    attr.add(new JobName(file.getName(), null))
+    attr.add(new JobName(name, null))
     attr.add(Chromaticity.COLOR)
 
     job.print(attr)
@@ -50,12 +64,12 @@ object Printer {
    *  @param numCopies number of printed copies of the file
    */
   def printPDFasImage(file: File, numCopies: Int): Unit = {
-    if (!file.getName().endsWith("pdf")) 
-      throw new PrinterException(file.getName() + " is not a pdf")
+    if (!file.getName.endsWith("pdf"))
+      throw new PrinterException(file.getName + " is not a pdf")
     val pdf = PDDocument.load(file)
     val pdfRenderer = new PDFRenderer(pdf)
     
-    val bims = for (page <- (0 to pdf.getNumberOfPages())) {
+    val bims = for (page <- 0 until pdf.getNumberOfPages) yield {
       pdfRenderer.renderImageWithDPI(page, 300, ImageType.RGB)
       //Save page:
       //ImageIOUtil.writeImage(bim, pdfFilename + "-" + (page+1) + ".png", 300)
@@ -65,14 +79,14 @@ object Printer {
     for (bim <- bims) {
       val page = new PDPage()
       doc.addPage(page)
-      val pdImageXObject = LosslessFactory.createFromImage(doc, bim, 300)
+      val pdImageXObject = LosslessFactory.createFromImage(doc, bim)
       
       // Second bool is compression. Remove if bad quality
-      val contentStream = new PDPageContentStream(doc, page, false, true) 
+      val contentStream = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.OVERWRITE, true)
       contentStream.drawImage(pdImageXObject, 0, 0)
       contentStream.close()
     }
-    printPDF(doc, numCopies)
+    printPDF(doc, file.getName, numCopies)
   }
   
   /** Prints one copy of all pdfs in a directory
@@ -98,7 +112,7 @@ object Printer {
       println(s"${index+1}/${orders.size}\t$id")
       
       val file = new File(dir + id + ".pdf")
-      printPDF(file, numCopies)
+      printPDFasImage(file, numCopies) //TESTING
     }
   }
 }

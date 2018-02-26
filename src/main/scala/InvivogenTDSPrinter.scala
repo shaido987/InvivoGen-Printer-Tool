@@ -5,7 +5,7 @@ import scala.io.Source
 object InvivogenTDSPrinter {
 
   /** Main method, no arguments necessary */
-  def main(args: Array[String]) = {
+  def main(args: Array[String]): Unit = {
     val linkFile    = "ProductLinks.csv"
     val orderFile   = "Order.csv"
     val baseAdress  = "http://invivogen.com/"
@@ -131,7 +131,7 @@ object InvivogenTDSPrinter {
       ||   Invivogen TDS Printer   |
       ||                           |
       |-----------------------------
-      || version: 1.0.5            |
+      || version: 1.0.6            |
       || author : shaido987        |
       || source : @github.com      |
       |-----------------------------
