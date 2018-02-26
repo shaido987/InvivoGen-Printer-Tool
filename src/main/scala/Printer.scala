@@ -77,7 +77,7 @@ object Printer {
     
     val doc = new PDDocument()
     for (bim <- bims) {
-      val page = new PDPage()
+      val page = new PDPage(PDRectangle.A4)
       doc.addPage(page)
       val pdImageXObject = LosslessFactory.createFromImage(doc, bim)
       
