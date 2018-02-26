@@ -63,13 +63,13 @@ object Printer {
     
     val doc = new PDDocument()
     for (bim <- bims) {
-      val page = new PDPage()
+      val page = new PDPage(PDRectangle.A4)
       doc.addPage(page)
       val pdImageXObject = LosslessFactory.createFromImage(doc, bim, 300)
       
       // Second bool is compression. Remove if bad quality
       val contentStream = new PDPageContentStream(doc, page, false, true) 
-      contentStream.drawImage(pdImageXObject, 0, 0)
+      contentStream.drawImage(pdImageXObject, 0, page.getCropBox().getHeight())
       contentStream.close()
     }
     printPDF(doc, numCopies)
