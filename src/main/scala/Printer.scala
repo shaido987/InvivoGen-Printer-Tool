@@ -3,6 +3,7 @@ import java.awt.print.{PrinterException, PrinterJob}
 import javax.print.attribute.HashPrintRequestAttributeSet
 import javax.print.attribute.standard.{Chromaticity, Copies, JobName, PageRanges, Sides}
 
+import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory
 import org.apache.pdfbox.pdmodel.{PDDocument, PDPage, PDPageContentStream}
 import org.apache.pdfbox.printing.PDFPageable
@@ -83,7 +84,7 @@ object Printer {
       
       // Second bool is compression. Remove if bad quality
       val contentStream = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.OVERWRITE, true)
-      contentStream.drawImage(pdImageXObject, 0, 0)
+      contentStream.drawImage(pdImageXObject, 0, page.getCropBox.getHeight)
       contentStream.close()
     }
     printPDF(doc, file.getName, numCopies)

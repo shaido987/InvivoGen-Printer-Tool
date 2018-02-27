@@ -1,1 +1,1 @@
-java -jar InvivogenTDSPrinter-assembly-1.0.6.jar & pause
+java -Xmx512m -jar InvivogenTDSPrinter-assembly-1.0.6.jar & pause
