@@ -84,7 +84,7 @@ object Printer {
       
       // Second bool is compression. Remove if bad quality
       val contentStream = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.OVERWRITE, true)
-      contentStream.drawImage(pdImageXObject, 0, 0)
+      contentStream.drawImage(pdImageXObject, 0, page.getCropBox().getHeight())
       contentStream.close()
     }
     printPDF(doc, file.getName, numCopies)
