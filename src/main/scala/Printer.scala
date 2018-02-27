@@ -3,6 +3,7 @@ import java.awt.print.{PrinterException, PrinterJob}
 import javax.print.attribute.HashPrintRequestAttributeSet
 import javax.print.attribute.standard.{Chromaticity, Copies, JobName, PageRanges, Sides}
 
+import org.apache.pdfbox.tools.imageio.ImageIOUtil
 import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory
 import org.apache.pdfbox.pdmodel.{PDDocument, PDPage, PDPageContentStream}
@@ -72,21 +73,30 @@ object Printer {
     
     val bims = for (page <- 0 until pdf.getNumberOfPages) yield {
       pdfRenderer.renderImageWithDPI(page, 300, ImageType.RGB)
-      //Save page:
-      //ImageIOUtil.writeImage(bim, pdfFilename + "-" + (page+1) + ".png", 300)
     }
-    
+
+
     val doc = new PDDocument()
-    for (bim <- bims) {
+    for ((bim, index) <- bims.zipWithIndex) {
+      //Save page test
+      //ImageIOUtil.writeImage(bim, file.getName.dropRight(4) + "-" + (index+1) + ".png", 300)
+
       val page = new PDPage(PDRectangle.A4)
       doc.addPage(page)
       val pdImageXObject = LosslessFactory.createFromImage(doc, bim)
-      
+
+
+      println(s"Height: ${page.getCropBox.getHeight}")
+      println(s"Width: ${page.getCropBox.getWidth}")
+
       // Second bool is compression. Remove if bad quality
       val contentStream = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.OVERWRITE, true)
-      contentStream.drawImage(pdImageXObject, 0, page.getCropBox.getHeight)
+      contentStream.drawImage(pdImageXObject, 0, 0, page.getCropBox.getWidth, page.getCropBox.getHeight)
       contentStream.close()
     }
+    // Save pdf test
+    //doc.save("test.pdf")
+
     printPDF(doc, file.getName, numCopies)
   }
   
