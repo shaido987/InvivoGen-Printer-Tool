@@ -71,8 +71,9 @@ object Printer {
     
     val bims = for (page <- 0 until pdf.getNumberOfPages) yield {
       pdfRenderer.renderImageWithDPI(page, 300, ImageType.RGB)
-      //Save page:
-      //ImageIOUtil.writeImage(bim, pdfFilename + "-" + (page+1) + ".png", 300)
+      
+      //Save page test
+      ImageIOUtil.writeImage(bim, pdfFilename + "-" + (page+1) + ".png", 300)
     }
     
     val doc = new PDDocument()
