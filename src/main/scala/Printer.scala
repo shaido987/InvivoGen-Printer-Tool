@@ -70,31 +70,27 @@ object Printer {
       throw new PrinterException(file.getName + " is not a pdf")
     val pdf = PDDocument.load(file)
     val pdfRenderer = new PDFRenderer(pdf)
-    
+
     val bims = for (page <- 0 until pdf.getNumberOfPages) yield {
-      pdfRenderer.renderImageWithDPI(page, 300, ImageType.RGB)
+      pdfRenderer.renderImageWithDPI(page, 500, ImageType.RGB)
     }
 
-
     val doc = new PDDocument()
+    val pageBox = pdf.getPage(0).getCropBox
     for ((bim, index) <- bims.zipWithIndex) {
-      //Save page test
+      //Save image as png test
       //ImageIOUtil.writeImage(bim, file.getName.dropRight(4) + "-" + (index+1) + ".png", 300)
 
-      val page = new PDPage(PDRectangle.A4)
+      val page = new PDPage(pageBox)
       doc.addPage(page)
       val pdImageXObject = LosslessFactory.createFromImage(doc, bim)
 
-
-      println(s"Height: ${page.getCropBox.getHeight}")
-      println(s"Width: ${page.getCropBox.getWidth}")
-
-      // Second bool is compression. Remove if bad quality
-      val contentStream = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.OVERWRITE, true)
-      contentStream.drawImage(pdImageXObject, 0, 0, page.getCropBox.getWidth, page.getCropBox.getHeight)
+      // Second bool is compression. Set to false for increased quality
+      val contentStream = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.OVERWRITE, false)
+      contentStream.drawImage(pdImageXObject, 0, 0, pageBox.getWidth, pageBox.getHeight)
       contentStream.close()
     }
-    // Save pdf test
+    // Save finished pdf test
     //doc.save("test.pdf")
 
     printPDF(doc, file.getName, numCopies)
