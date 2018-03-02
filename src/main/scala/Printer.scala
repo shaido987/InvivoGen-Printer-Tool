@@ -65,7 +65,7 @@ object Printer {
   def printOrders(dir: String, orders: Map[String, Int]): Unit = {
     println("-----------------------------")
     println("Starting to print")
-    for (((id, numCopies), index) <- orders.zipWithIndex) {
+    for (((id, numCopies), index) <- orders.toSeq.zipWithIndex) {
       println(s"${index+1}/${orders.size}\t$id")
       
       val file = new File(dir + id + ".pdf")
