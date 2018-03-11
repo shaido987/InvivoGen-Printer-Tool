@@ -52,7 +52,6 @@ object Printer {
     attr.add(Chromaticity.COLOR)
 
     job.print(attr)
-
     pdf.close()
   }
 
@@ -71,15 +70,10 @@ object Printer {
     val pdf = PDDocument.load(file)
     val pdfRenderer = new PDFRenderer(pdf)
 
-    val bims = for (page <- 0 until pdf.getNumberOfPages) yield {
-      pdfRenderer.renderImageWithDPI(page, 500, ImageType.RGB)
-    }
-
     val doc = new PDDocument()
     val pageBox = pdf.getPage(0).getCropBox
-    for ((bim, index) <- bims.zipWithIndex) {
-      //Save image as png test
-      //ImageIOUtil.writeImage(bim, file.getName.dropRight(4) + "-" + (index+1) + ".png", 300)
+    for (orgPage <- 0 until pdf.getNumberOfPages) {
+      val bim = pdfRenderer.renderImageWithDPI(orgPage, 300, ImageType.RGB)
 
       val page = new PDPage(pageBox)
       doc.addPage(page)
@@ -90,9 +84,9 @@ object Printer {
       contentStream.drawImage(pdImageXObject, 0, 0, pageBox.getWidth, pageBox.getHeight)
       contentStream.close()
     }
-    // Save finished pdf test
-    //doc.save("test.pdf")
+    pdf.close()
 
+    // Print the new pdf
     printPDF(doc, file.getName, numCopies)
   }
   
@@ -115,7 +109,7 @@ object Printer {
   def printOrders(dir: String, orders: Map[String, Int]): Unit = {
     println("-----------------------------")
     println("Starting to print")
-    for (((id, numCopies), index) <- orders.zipWithIndex) {
+    for (((id, numCopies), index) <- orders.toSeq.zipWithIndex) {
       println(s"${index+1}/${orders.size}\t$id")
       
       val file = new File(dir + id + ".pdf")
