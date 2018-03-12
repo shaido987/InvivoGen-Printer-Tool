@@ -39,10 +39,16 @@ object Html {
       text.toLowerCase.replaceAll("-|_|\\s","").contains(id.toLowerCase.replaceAll("-|_|\\s",""))
     }
 
-    // Check so the id is in the text
-    textLinks.filter{case (text, link) => textContains(text, id)}
-      .map(_._2)
-      .head // Only take the TDS, ignore the MDMS
+    // Check so the id is in the text and only take the first (the TDS)
+    val tds = textLinks.filter{case (text, link) => textContains(text, id)}.head
+    
+    // In rare cases the TDS does not contain the id while the MSDS does
+    // In this case, there will not be multiple TDS documents for the same product page
+    if (tds._1.startswith("MSDS")) {
+      textLinks.filter{case (text, link) => textContains(text, "TDS")}.head._2
+    } else {
+      tds._2  
+    }
   }
 
   /** Downloads a pdf document.
