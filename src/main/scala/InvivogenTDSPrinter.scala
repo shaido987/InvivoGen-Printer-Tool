@@ -33,7 +33,7 @@ object InvivogenTDSPrinter {
 
     val res = for (order <- orders if order.trim.nonEmpty) yield {
       val id :: numCopies :: _ = order.split(",").map(_.trim.replace("\"", "")).toList
-      id -> numCopies.toInt
+      id.toLowerCase -> numCopies.toInt
     }
     res.filter(_._2 > 0).groupBy(_._1).mapValues(_.map(_._2).sum)  // Only return the orders with 1 or more to-be-printed pdf
   }
@@ -49,7 +49,7 @@ object InvivogenTDSPrinter {
 
     val res = for (idLink <- idLinks if idLink.trim.nonEmpty) yield {
       val id :: link :: _ = idLink.split(",").map(_.trim).toList
-      id -> link
+      id.toLowerCase -> link
     }
     res.toMap
   }
