@@ -1,18 +1,14 @@
 import java.io.File
-import java.awt.print.PrinterJob
-import java.awt.print.PrinterException
-
-import javax.print.PrintService
+import java.awt.print.{PrinterException, PrinterJob}
 import javax.print.attribute.HashPrintRequestAttributeSet
-import javax.print.attribute.PrintRequestAttributeSet
-import javax.print.attribute.standard.PageRanges
-import javax.print.attribute.standard.Sides
-import javax.print.attribute.standard.Copies
-import javax.print.attribute.standard.JobName
-import javax.print.attribute.standard.Chromaticity
+import javax.print.attribute.standard.{Chromaticity, Copies, JobName, PageRanges, Sides}
 
-import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.tools.imageio.ImageIOUtil
+import org.apache.pdfbox.pdmodel.common.PDRectangle
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory
+import org.apache.pdfbox.pdmodel.{PDDocument, PDPage, PDPageContentStream}
 import org.apache.pdfbox.printing.PDFPageable
+import org.apache.pdfbox.rendering.{ImageType, PDFRenderer}
 
 /** Handels all the interactions with the printer */
 object Printer {
@@ -23,29 +19,77 @@ object Printer {
    *  - double-sided (long edge)
    *  - in color
    *
-   *  @param file the pdf file to print
+   *  @param file the pdf file to print in File format
    *  @param numCopies number of printed copies of the file
    */
   def printPDF(file: File, numCopies: Int): Unit = {
-    if (!file.getName().endsWith("pdf")) 
-      throw new PrinterException(file.getName() + " is not a pdf")
+    if (!file.getName.endsWith("pdf"))
+      throw new PrinterException(file.getName + " is not a pdf")
 
     val pdf = PDDocument.load(file)
-    val job = PrinterJob.getPrinterJob()
+    printPDF(pdf, file.getName, numCopies)
+  }
+
+  /** Prints a pdf file to the standard printer with the following settings:
+    *  - job name is same as product
+    *  - all pages
+    *  - double-sided (long edge)
+    *  - in color
+    *
+    *  @param pdf the pdf file to print in PDDocument format
+    *  @param name the name of the printjob
+    *  @param numCopies number of printed copies of the file
+    */
+  def printPDF(pdf: PDDocument, name: String, numCopies: Int): Unit = {
+    val job = PrinterJob.getPrinterJob
     job.setPageable(new PDFPageable(pdf))
 
     val attr = new HashPrintRequestAttributeSet()
-    attr.add(new PageRanges(1, pdf.getNumberOfPages()))
+    attr.add(new PageRanges(1, pdf.getNumberOfPages))
     attr.add(Sides.TWO_SIDED_LONG_EDGE)
     attr.add(new Copies(numCopies))
-    attr.add(new JobName(file.getName(), null))
+    attr.add(new JobName(name, null))
     attr.add(Chromaticity.COLOR)
 
     job.print(attr)
-
     pdf.close()
   }
 
+  /** Prints a pdf file to the standard printer as an image with the following settings:
+   *  - job name is same as product
+   *  - all pages
+   *  - double-sided (long edge)
+   *  - in color
+   *
+   *  @param file the pdf file to print
+   *  @param numCopies number of printed copies of the file
+   */
+  def printPDFasImage(file: File, numCopies: Int): Unit = {
+    if (!file.getName.endsWith("pdf"))
+      throw new PrinterException(file.getName + " is not a pdf")
+    val pdf = PDDocument.load(file)
+    val pdfRenderer = new PDFRenderer(pdf)
+
+    val doc = new PDDocument()
+    val pageBox = pdf.getPage(0).getCropBox
+    for (orgPage <- 0 until pdf.getNumberOfPages) {
+      val bim = pdfRenderer.renderImageWithDPI(orgPage, 300, ImageType.RGB)
+
+      val page = new PDPage(pageBox)
+      doc.addPage(page)
+      val pdImageXObject = LosslessFactory.createFromImage(doc, bim)
+
+      // Second bool is compression. Set to false for increased quality
+      val contentStream = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.OVERWRITE, false)
+      contentStream.drawImage(pdImageXObject, 0, 0, pageBox.getWidth, pageBox.getHeight)
+      contentStream.close()
+    }
+    pdf.close()
+
+    // Print the new pdf
+    printPDF(doc, file.getName, numCopies)
+  }
+  
   /** Prints one copy of all pdfs in a directory
    *
    *  @param dir the directory with pdfs to print
@@ -69,7 +113,7 @@ object Printer {
       println(s"${index+1}/${orders.size}\t$id")
       
       val file = new File(dir + id + ".pdf")
-      printPDF(file, numCopies)
+      printPDFasImage(file, numCopies) //TESTING
     }
   }
 }

@@ -5,7 +5,7 @@ import scala.io.Source
 object InvivogenTDSPrinter {
 
   /** Main method, no arguments necessary */
-  def main(args: Array[String]) = {
+  def main(args: Array[String]): Unit = {
     val linkFile    = "ProductLinks.csv"
     val orderFile   = "Order.csv"
     val baseAdress  = "http://invivogen.com/"
@@ -33,7 +33,7 @@ object InvivogenTDSPrinter {
 
     val res = for (order <- orders if order.trim.nonEmpty) yield {
       val id :: numCopies :: _ = order.split(",").map(_.trim.replace("\"", "")).toList
-      id -> numCopies.toInt
+      id.toLowerCase -> numCopies.toInt
     }
     res.filter(_._2 > 0).groupBy(_._1).mapValues(_.map(_._2).sum)  // Only return the orders with 1 or more to-be-printed pdf
   }
@@ -49,7 +49,7 @@ object InvivogenTDSPrinter {
 
     val res = for (idLink <- idLinks if idLink.trim.nonEmpty) yield {
       val id :: link :: _ = idLink.split(",").map(_.trim).toList
-      id -> link
+      id.toLowerCase -> link
     }
     res.toMap
   }
@@ -131,7 +131,7 @@ object InvivogenTDSPrinter {
       ||   Invivogen TDS Printer   |
       ||                           |
       |-----------------------------
-      || version: 1.0.5            |
+      || version: 1.0.6            |
       || author : shaido987        |
       || source : @github.com      |
       |-----------------------------
