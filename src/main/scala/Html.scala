@@ -26,10 +26,10 @@ object Html {
     load(new sax.InputSource(urlc.getInputStream()))
   }
 
-  /** Parses an XML Node to find the pdf documents.
+  /** Parses an XML Node to find the pdf document for the specified product id.
    *
    *  @param node the XML node to search
-   *  @return all pdf documents meeting the requirements (TDS and MSDS).
+   *  @return the pdf document meeting the requirements; a single TDS link.
    */
   def findPDF(node: Node, id: String) : String = {
     val pdfs = (node \\ "ul").filter(_.attribute("class").getOrElse("").toString == ("liste-pdf")).head
@@ -39,10 +39,17 @@ object Html {
       text.toLowerCase.replaceAll("-|_|\\s","").contains(id.toLowerCase.replaceAll("-|_|\\s",""))
     }
 
-    // Check so the id is in the text
-    textLinks.filter{case (text, link) => textContains(text, id)}
-      .map(_._2)
-      .head // Only take the TDS, ignore the MDMS
+    // Check so the id is in the text and only take the first (the TDS)
+    val tds = textLinks.filter{case (text, _) => textContains(text, id)}.head
+
+    // In rare cases the TDS does not contain the id while the MSDS does
+    // there will not be multiple TDS documents for the same product page in this scenario
+    if (!tds._2.contains("TDS")) {
+      println("-- No specific product TDS found, downloading product family TDS")
+      textLinks.filter{case (_, link) => textContains(link, "TDS")}.head._2
+    } else {
+      tds._2
+    }
   }
 
   /** Downloads a pdf document.

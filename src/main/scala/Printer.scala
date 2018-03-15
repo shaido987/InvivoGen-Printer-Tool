@@ -1,8 +1,14 @@
-import java.io.{File, FileInputStream, FileNotFoundException}
-import java.awt.print.PrinterException
-import javax.print.{DocFlavor, PrintService, PrintServiceLookup, SimpleDoc}
-import javax.print.attribute.{HashDocAttributeSet, HashPrintRequestAttributeSet}
-import javax.print.attribute.standard._
+import java.io.File
+import java.awt.print.{PrinterException, PrinterJob}
+import javax.print.attribute.HashPrintRequestAttributeSet
+import javax.print.attribute.standard.{Chromaticity, Copies, JobName, PageRanges, Sides}
+
+import org.apache.pdfbox.tools.imageio.ImageIOUtil
+import org.apache.pdfbox.pdmodel.common.PDRectangle
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory
+import org.apache.pdfbox.pdmodel.{PDDocument, PDPage, PDPageContentStream}
+import org.apache.pdfbox.printing.PDFPageable
+import org.apache.pdfbox.rendering.{ImageType, PDFRenderer}
 
 /** Handels all the interactions with the printer */
 object Printer {
@@ -13,55 +19,77 @@ object Printer {
    *  - double-sided (long edge)
    *  - in color
    *
-   *  @param file the pdf file to print
+   *  @param file the pdf file to print in File format
    *  @param numCopies number of printed copies of the file
    */
   def printPDF(file: File, numCopies: Int): Unit = {
-    try {
-      val flavor = DocFlavor.INPUT_STREAM.AUTOSENSE
-      val docAttrs = new HashDocAttributeSet()
-      docAttrs.add(new DocumentName(file.getName, null))
-      docAttrs.add(Chromaticity.COLOR)
-      docAttrs.add(Sides.DUPLEX)
-      docAttrs.add(Sides.TWO_SIDED_LONG_EDGE)
-      val fis = new FileInputStream(file)
-      val doc = new SimpleDoc(fis, flavor, docAttrs)
+    if (!file.getName.endsWith("pdf"))
+      throw new PrinterException(file.getName + " is not a pdf")
 
-      val printService = PrintServiceLookup.lookupDefaultPrintService()
-      val job = printService.createPrintJob()
-      val jobAttrs = new HashPrintRequestAttributeSet()
-      jobAttrs.add(new JobName(file.getName, null))
-      jobAttrs.add(new Copies(numCopies))
-      jobAttrs.add(Sides.DUPLEX)
-      jobAttrs.add(Sides.TWO_SIDED_LONG_EDGE)
-      jobAttrs.add(Chromaticity.COLOR)
-
-
-      // TODO: TESTING
-      val supportedAttrs = printService.getSupportedAttributeCategories
-      val unSupportedAttrs = printService.getUnsupportedAttributes(flavor, jobAttrs)
-      val supporedFlavors = printService.getSupportedDocFlavors
-      val attrs = printService.getAttributes
-
-      println("Supported flavors:")
-      supporedFlavors foreach println
-      println("Supported Attrs:")
-      supportedAttrs foreach (x => println(x.toString))
-      println("Un-supported Attrs:")
-      unSupportedAttrs.toArray foreach (x => println(s"Category: ${x.getCategory}, name: ${x.getName}"))
-      println("Printer Attrs:")
-      attrs.toArray foreach (x => println(s"Category: ${x.getCategory}, name: ${x.getName}"))
-
-
-      job.print(doc, jobAttrs)
-      fis.close()
-    } catch {
-      case e: PrinterException => println("Printer exception");  e.printStackTrace()
-      case e: FileNotFoundException => println("File not found"); e.printStackTrace()
-      case e: NullPointerException => println("No default printer"); e.printStackTrace()
-    }
+    val pdf = PDDocument.load(file)
+    printPDF(pdf, file.getName, numCopies)
   }
 
+  /** Prints a pdf file to the standard printer with the following settings:
+    *  - job name is same as product
+    *  - all pages
+    *  - double-sided (long edge)
+    *  - in color
+    *
+    *  @param pdf the pdf file to print in PDDocument format
+    *  @param name the name of the printjob
+    *  @param numCopies number of printed copies of the file
+    */
+  def printPDF(pdf: PDDocument, name: String, numCopies: Int): Unit = {
+    val job = PrinterJob.getPrinterJob
+    job.setPageable(new PDFPageable(pdf))
+
+    val attr = new HashPrintRequestAttributeSet()
+    attr.add(new PageRanges(1, pdf.getNumberOfPages))
+    attr.add(Sides.TWO_SIDED_LONG_EDGE)
+    attr.add(new Copies(numCopies))
+    attr.add(new JobName(name, null))
+    attr.add(Chromaticity.COLOR)
+
+    job.print(attr)
+    pdf.close()
+  }
+
+  /** Prints a pdf file to the standard printer as an image with the following settings:
+   *  - job name is same as product
+   *  - all pages
+   *  - double-sided (long edge)
+   *  - in color
+   *
+   *  @param file the pdf file to print
+   *  @param numCopies number of printed copies of the file
+   */
+  def printPDFasImage(file: File, numCopies: Int): Unit = {
+    if (!file.getName.endsWith("pdf"))
+      throw new PrinterException(file.getName + " is not a pdf")
+    val pdf = PDDocument.load(file)
+    val pdfRenderer = new PDFRenderer(pdf)
+
+    val doc = new PDDocument()
+    val pageBox = pdf.getPage(0).getCropBox
+    for (orgPage <- 0 until pdf.getNumberOfPages) {
+      val bim = pdfRenderer.renderImageWithDPI(orgPage, 300, ImageType.RGB)
+
+      val page = new PDPage(pageBox)
+      doc.addPage(page)
+      val pdImageXObject = LosslessFactory.createFromImage(doc, bim)
+
+      // Second bool is compression. Set to false for increased quality
+      val contentStream = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.OVERWRITE, false)
+      contentStream.drawImage(pdImageXObject, 0, 0, pageBox.getWidth, pageBox.getHeight)
+      contentStream.close()
+    }
+    pdf.close()
+
+    // Print the new pdf
+    printPDF(doc, file.getName, numCopies)
+  }
+  
   /** Prints one copy of all pdfs in a directory
    *
    *  @param dir the directory with pdfs to print
@@ -81,11 +109,11 @@ object Printer {
   def printOrders(dir: String, orders: Map[String, Int]): Unit = {
     println("-----------------------------")
     println("Starting to print")
-    for (((id, numCopies), index) <- orders.zipWithIndex) {
+    for (((id, numCopies), index) <- orders.toSeq.zipWithIndex) {
       println(s"${index+1}/${orders.size}\t$id")
       
       val file = new File(dir + id + ".pdf")
-      printPDF(file, numCopies)
+      printPDFasImage(file, numCopies) //TESTING
     }
   }
 }
