@@ -102,13 +102,19 @@ object InvivogenTDSPrinter {
       println(s"${index+1}/${ids.length}\t$id")
 
       linkMap.get(id) match {
-        case Some(link) => downloadTDS(id, link, baseAdress, destFolder)
+        case Some(link) => try {
+          downloadTDS(id, link, baseAdress, destFolder)
+        } catch {
+          case _: NoSuchElementException => println("-- Product webpage does not exist (could have been discontinued)")
+          case e: Exception => println("Exception when downloading product: " + e.getMessage())
+        }
         case None       => throw new NoSuchElementException("The id " + id + " not in link csv file.")
       }
     }
   }
 
-  /** Downloads all TDS documents
+  /** Downloads all TDS documents.
+   * Since some product have been discontinued this is done in a try-catch.
    *
    * @param linkMap mapping from product id to product webpage
    * @param baseAdress the base adress to invivogen
@@ -118,7 +124,12 @@ object InvivogenTDSPrinter {
     println(s"Downloading all TDS documents, total: ${linkMap.size}")
     for (((id, link), index) <- linkMap.toSeq.zipWithIndex) {
       println(s"${index+1}/${linkMap.size}\t$id")
-      downloadTDS(id, link, baseAdress, destFolder)
+      try {
+        downloadTDS(id, link, baseAdress, destFolder)
+      } catch {
+        case _: NoSuchElementException => println("-- Product webpage does not exist (could have been discontinued)")
+        case e: Exception => println("Exception when downloading product: " + e.getMessage())
+      }
     }
   }
 
