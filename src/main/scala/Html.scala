@@ -44,9 +44,9 @@ object Html {
 
     // In rare cases the TDS does not contain the id while the MSDS does (e.g. pUNO product family)
     // there will not be multiple TDS documents for the same product page in this scenario
-    if (tds._1.startsWith("Map & Seq")) {
+    if (tds._1.startsWith("MSDS") || tds._1.startsWith("Map & Seq")) {
       println("-- No specific product TDS found, downloading product family TDS")
-      textLinks.filter{case (_, link) => textContains(link, "TDS")}.head._2
+      textLinks.filter{case (text, link) => textContains(link, "TDS") || text.toLowerCase.startsWith("data")}.head._2
     } else {
       tds._2
     }
