@@ -14,14 +14,14 @@ import org.apache.pdfbox.rendering.{ImageType, PDFRenderer}
 object Printer {
   
   /** Prints a pdf file to the standard printer with the following settings:
-   *  - job name is same as product
-   *  - all pages
-   *  - double-sided (long edge)
-   *  - in color
-   *
-   *  @param file the pdf file to print in File format
-   *  @param numCopies number of printed copies of the file
-   */
+    *  - job name is same as product
+    *  - all pages
+    *  - double-sided (long edge)
+    *  - in color
+    *
+    *  @param file the pdf file to print in File format
+    *  @param numCopies number of printed copies of the file
+    */
   def printPDF(file: File, numCopies: Int): Unit = {
     if (!file.getName.endsWith("pdf"))
       throw new PrinterException(file.getName + " is not a pdf")
@@ -56,14 +56,14 @@ object Printer {
   }
 
   /** Prints a pdf file to the standard printer as an image with the following settings:
-   *  - job name is same as product
-   *  - all pages
-   *  - double-sided (long edge)
-   *  - in color
-   *
-   *  @param file the pdf file to print
-   *  @param numCopies number of printed copies of the file
-   */
+    *  - job name is same as product
+    *  - all pages
+    *  - double-sided (long edge)
+    *  - in color
+    *
+    *  @param file the pdf file to print
+    *  @param numCopies number of printed copies of the file
+    */
   def printPDFasImage(file: File, numCopies: Int): Unit = {
     if (!file.getName.endsWith("pdf"))
       throw new PrinterException(file.getName + " is not a pdf")
@@ -91,9 +91,9 @@ object Printer {
   }
   
   /** Prints one copy of all pdfs in a directory
-   *
-   *  @param dir the directory with pdfs to print
-   */
+    *
+    *  @param dir the directory with pdfs to print
+    */
   def printDirectory(dir: String): Unit = {
     val d = new File(dir) 
     for (file <- d.listFiles if file.getName.endsWith(".pdf")) {
@@ -102,18 +102,24 @@ object Printer {
   }
 
   /** Prints all orders, requires all TDSs to be downoaded
-   *
-   *  @param dir directory will downlaoded pdf
-   *  @param orders mapping between product name and number of copies to print
-   */
-  def printOrders(dir: String, orders: Map[String, Int]): Unit = {
+    *
+    *  @param dir directory will downlaoded pdf
+    *  @param orders mapping between product name and number of copies to print
+    *  @param specialOrders special orders that need to be printed as images
+    */
+  def printOrders(dir: String, orders: Map[String, Int], specialOrders: Set[String] = Set()): Unit = {
     println("-----------------------------")
     println("Starting to print")
     for (((id, numCopies), index) <- orders.toSeq.zipWithIndex) {
       println(s"${index+1}/${orders.size}\t$id")
       
       val file = new File(dir + id + ".pdf")
-      printPDFasImage(file, numCopies) //TESTING
+      if (specialOrders contains id) {
+        println("-- Product id in special file ProductsWithBlanks.csv, printing product as image")
+        printPDFasImage(file, numCopies)
+      } else {
+        printPDF(file, numCopies)
+      }
     }
   }
 }

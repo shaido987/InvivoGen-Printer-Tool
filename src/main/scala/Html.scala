@@ -27,10 +27,10 @@ object Html {
   }
 
   /** Parses an XML Node to find the pdf document for the specified product id.
-   *
-   *  @param node the XML node to search
-   *  @return the pdf document meeting the requirements; a single TDS link.
-   */
+    *
+    *  @param node the XML node to search
+    *  @return the pdf document meeting the requirements; a single TDS link.
+    */
   def findPDF(node: Node, id: String) : String = {
     val pdfs = (node \\ "ul").filter(_.attribute("class").getOrElse("").toString == ("liste-pdf")).head
     val textLinks: Seq[(String, String)] = (pdfs \\ "a").map(n => (n.text.toString, n.attribute("href").get.toString))
@@ -53,11 +53,11 @@ object Html {
   }
 
   /** Downloads a pdf document.
-   *
-   *  @param source the source adress to download
-   *  @param id id of the saved file
-   *  @param dest destionation directory
-   */
+    *
+    *  @param source the source adress to download
+    *  @param id id of the saved file
+    *  @param dest destionation directory
+    */
   def downloadPDF(source: String, id: String , dest: String = "./") : Unit = {
     val file = new File(dest ++ id)
     if (!file.getParentFile.exists)
