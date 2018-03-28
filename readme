@@ -4,10 +4,13 @@ These are then automatically printed on the default printer.
 
 This is customized for InvivoGen in Hong Kong, however, it could be extended for other inputs and requirements.
 
-Two files are required:
+Three files are required:
 
 - ProductLinks.csv
+This file contains each product id together with the web page where the TDS can be downloaded.
 - Order.csv
-
-ProductLinks.csv contains the pages where the TDS can be downloaded.
-The Order.csv should contain the product id and number of items of all orders. Those products in the order with a TDS are downloaded and the correct number of TDS documents are printed for each.
+Contain the product id and the number of items to print for the current order.
+The products in the order with a TDS are downloaded and the correct number of TDS documents are printed for each.
+- ProductsWithBlanks.csv
+This file contains special product where, if the TDS pdf is printed normally, there will be blank pages for some images.
+The TDS of products in this file will first be converted to images before printing, this makes the process slower but there will not be blank pages.

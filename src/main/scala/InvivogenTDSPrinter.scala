@@ -62,7 +62,7 @@ object InvivogenTDSPrinter {
     * @return A set with all special products
     */
   def getBlankProducts(blankFile: String): Set[String] = {
-    Source.fromFile(blankFile).getLines().toSet
+    Source.fromFile(blankFile).getLines().toSeq.map(_.toLowerCase).toSet
   }
 
   /** Filter all orders after existig TDS webpages. 
@@ -157,6 +157,9 @@ object InvivogenTDSPrinter {
       || author : shaido987        |
       || source : @github.com      |
       |-----------------------------
+      |
+      |If there are any usage issues or errors, feel free to report a new issue at
+      |https://github.com/shaido987/InvivoGen-Printer-Tool/issues
       """
 
     println(greeting.stripMargin)
