@@ -11,5 +11,7 @@ Three files are required:
     Contains the product id and the number of items to print for the current order.
     The products that have a TDS are downloaded and the wanted number of TDS documents are printed for each product.
 - ProductsWithBlanks.csv
-    This file contains special products where, if the TDS pdf is printed normally, there will be blank pages for some images.
-    The TDS documents of products in this file will first be converted to images before printing, this makes the process slower but there will be no blank pages.
+    This file contains special products where, if the TDS pdf is printed normally, 
+    there will be blank pages for some images.
+    The TDS documents of products in this file will first be converted to images before printing,
+    this makes the process slower but there will be no blank pages.
